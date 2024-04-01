@@ -14,6 +14,7 @@ import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.model.po.CourseCategory;
 import com.xuecheng.content.model.po.CourseMarket;
 import com.xuecheng.content.service.CourseBaseInfoService;
+import com.xuecheng.exception.XueChengPlusException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -58,28 +59,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
 
     @Override
     public CourseBaseInfoDto createCourseBase(Long companyId, AddCourseDto addCourseDto) {
-        // 1. 合法性校验
-        if (StringUtils.isBlank(addCourseDto.getName())) {
-            throw new RuntimeException("课程名称为空");
-        }
-        if (StringUtils.isBlank(addCourseDto.getMt())) {
-            throw new RuntimeException("课程分类为空");
-        }
-        if (StringUtils.isBlank(addCourseDto.getSt())) {
-            throw new RuntimeException("课程分类为空");
-        }
-        if (StringUtils.isBlank(addCourseDto.getGrade())) {
-            throw new RuntimeException("课程等级为空");
-        }
-        if (StringUtils.isBlank(addCourseDto.getTeachmode())) {
-            throw new RuntimeException("教育模式为空");
-        }
-        if (StringUtils.isBlank(addCourseDto.getUsers())) {
-            throw new RuntimeException("适应人群为空");
-        }
-        if (StringUtils.isBlank(addCourseDto.getCharge())) {
-            throw new RuntimeException("收费规则为空");
-        }
+        // 1. 合法性校验，由JSR-303校验
         // 2. 封装请求参数
         // 封装课程基本信息
         CourseBase courseBase = new CourseBase();
@@ -100,17 +80,9 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         BeanUtils.copyProperties(addCourseDto, courseMarket);
         courseMarket.setId(courseId);
         // 2.6 判断收费规则，若课程收费，则价格必须大于0
-        String charge = courseMarket.getCharge();
-        if ("201001".equals(charge)) {
-            Float price = addCourseDto.getPrice();
-            if (price == null || price.floatValue() <= 0) {
-                throw new RuntimeException("课程设置了收费，价格不能为空，且必须大于0");
-            }
-        }
-        // 2.7 插入课程营销信息表
         int marketInsert = courseMarketMapper.insert(courseMarket);
         if (baseInsert <= 0 || marketInsert <= 0) {
-            throw new RuntimeException("新增课程基本信息失败");
+            XueChengPlusException.cast("新增课程基本信息失败");
         }
         // 3. 返回添加的课程信息
         return getCourseBaseInfo(courseId);
