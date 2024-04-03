@@ -4,16 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xuecheng.base.model.PageParams;
 import com.xuecheng.base.model.PageResult;
-import com.xuecheng.content.mapper.CourseBaseMapper;
-import com.xuecheng.content.mapper.CourseCategoryMapper;
-import com.xuecheng.content.mapper.CourseMarketMapper;
+import com.xuecheng.content.mapper.*;
 import com.xuecheng.content.model.dto.AddCourseDto;
 import com.xuecheng.content.model.dto.CourseBaseInfoDto;
 import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
-import com.xuecheng.content.model.po.CourseBase;
-import com.xuecheng.content.model.po.CourseCategory;
-import com.xuecheng.content.model.po.CourseMarket;
+import com.xuecheng.content.model.po.*;
 import com.xuecheng.content.service.CourseBaseInfoService;
 import com.xuecheng.exception.XueChengPlusException;
 import org.apache.commons.lang3.StringUtils;
@@ -40,6 +36,12 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
     @Resource
     CourseMarketServiceImpl courseMarketServiceImpl;
 
+    @Resource
+    CourseTeacherMapper courseTeacherMapper;
+
+    @Resource
+    TeachplanMapper teachplanMapper;
+
     @Override
     public PageResult<CourseBase> queryCourseBaseList(PageParams pageParams, QueryCourseParamsDto queryCourseParams) {
         // 构建条件查询器
@@ -50,6 +52,7 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParams.getAuditStatus()), CourseBase::getAuditStatus, queryCourseParams.getAuditStatus());
         // 构建查询条件，按照课程发布状态查询
         queryWrapper.eq(StringUtils.isNotEmpty(queryCourseParams.getPublishStatus()), CourseBase::getStatus, queryCourseParams.getPublishStatus());
+        queryWrapper.orderByDesc(CourseBase::getCreateDate);
         // 分页对象
         Page<CourseBase> page = new Page<>(pageParams.getPageNo(), pageParams.getPageSize());
         // 查询数据内容获得结果
@@ -113,11 +116,11 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         if (courseMarket == null) {
             courseMarket = new CourseMarket();
         }
+        // 对象拷贝
+        BeanUtils.copyProperties(editCourseDto, courseMarket);
         courseMarket.setId(courseId);
-        int marketUpdate = saveCourseMarket(courseMarket);
-        if (baseUpdate <= 0 || marketUpdate <= 0) {
-            XueChengPlusException.cast("编辑课程基本信息失败");
-        }
+        // 获取课程收费状态并设置
+        this.saveCourseMarket(courseMarket);
         return getCourseBaseInfo(courseId);
     }
 
@@ -159,5 +162,26 @@ public class CourseBaseInfoServiceImpl implements CourseBaseInfoService {
         // 2.7 插入课程营销信息表
         boolean flag = courseMarketServiceImpl.saveOrUpdate(courseMarket);
         return flag ? 1 : -1;
+    }
+
+
+    @Transactional
+    @Override
+    public void delectCourse(Long companyId, Long courseId) {
+        CourseBase courseBase = courseBaseMapper.selectById(courseId);
+        if (!companyId.equals(courseBase.getCompanyId()))
+            XueChengPlusException.cast("只允许删除本机构的课程");
+        // 删除课程教师信息
+        LambdaQueryWrapper<CourseTeacher> teacherLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        teacherLambdaQueryWrapper.eq(CourseTeacher::getCourseId, courseId);
+        courseTeacherMapper.delete(teacherLambdaQueryWrapper);
+        // 删除课程计划
+        LambdaQueryWrapper<Teachplan> teachplanLambdaQueryWrapper = new LambdaQueryWrapper<>();
+        teachplanLambdaQueryWrapper.eq(Teachplan::getCourseId, courseId);
+        teachplanMapper.delete(teachplanLambdaQueryWrapper);
+        // 删除营销信息
+        courseMarketMapper.deleteById(courseId);
+        // 删除课程基本信息
+        courseBaseMapper.deleteById(courseId);
     }
 }
