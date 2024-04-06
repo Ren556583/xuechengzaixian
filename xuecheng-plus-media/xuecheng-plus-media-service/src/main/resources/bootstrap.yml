@@ -1,6 +1,12 @@
 spring:
   application:
     name: media-service
+  servlet:
+    multipart:
+      max-file-size: 200MB
+      enabled: true
+      max-request-size: 200MB
+      file-size-threshold: 200MB
   cloud:
     nacos:
       server-addr: 192.168.101.65:8848
