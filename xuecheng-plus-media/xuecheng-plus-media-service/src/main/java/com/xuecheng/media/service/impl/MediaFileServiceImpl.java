@@ -8,10 +8,12 @@ import com.xuecheng.base.model.RestResponse;
 import com.xuecheng.base.utils.GetContentTypeUtil;
 import com.xuecheng.exception.XueChengPlusException;
 import com.xuecheng.media.mapper.MediaFilesMapper;
+import com.xuecheng.media.mapper.MediaProcessMapper;
 import com.xuecheng.media.model.dto.QueryMediaParamsDto;
 import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
+import com.xuecheng.media.model.po.MediaProcess;
 import com.xuecheng.media.service.MediaFileService;
 import io.minio.UploadObjectArgs;
 import org.apache.commons.io.IOUtils;
@@ -45,6 +47,9 @@ public class MediaFileServiceImpl implements MediaFileService {
 
     @Autowired
     MediaFilesMapper mediaFilesMapper;
+
+    @Autowired
+    MediaProcessMapper mediaProcessMapper;
 
     @Autowired
     MediaFileService currentProxy;
@@ -137,7 +142,8 @@ public class MediaFileServiceImpl implements MediaFileService {
      * @param bucket     桶
      * @param objectName 对象名称
      */
-    private void addMediaFilesToMinIO(String filePath, String bucket, String objectName) {
+    @Override
+    public void addMediaFilesToMinIO(String filePath, String bucket, String objectName) {
         String contentType = GetContentTypeUtil.getContentType(objectName);
         try {
             minioClient.uploadObject(UploadObjectArgs
@@ -164,6 +170,8 @@ public class MediaFileServiceImpl implements MediaFileService {
      */
     @Transactional
     public MediaFiles addMediaFilesToDB(Long companyId, UploadFileParamsDto uploadFileParamsDto, String objectName, String fileMD5, String bucket) {
+        // 获取源文件名的contentType
+        String contentType = GetContentTypeUtil.getContentType(objectName);
         // 保存到数据库
         MediaFiles mediaFiles = mediaFilesMapper.selectById(fileMD5);
         if (mediaFiles == null) {
@@ -177,8 +185,6 @@ public class MediaFileServiceImpl implements MediaFileService {
             mediaFiles.setStatus("1");
             mediaFiles.setFilePath(objectName);
             mediaFiles.setUrl("/" + bucket + "/" + objectName);
-            // 获取源文件名的contentType
-            String contentType = GetContentTypeUtil.getContentType(objectName);
             // 如果是图片格式或者mp4格式，则设置URL属性，否则不设置
             if (contentType.contains("image") || contentType.contains("mp4")) {
                 mediaFiles.setUrl("/" + bucket + "/" + objectName);
@@ -190,6 +196,16 @@ public class MediaFileServiceImpl implements MediaFileService {
         int insert = mediaFilesMapper.insert(mediaFiles);
         if (insert <= 0) {
             XueChengPlusException.cast("保存文件信息失败");
+        }
+        // 如果是avi视频，则额外添加至视频待处理表
+        if ("video/x-msvideo".equals(contentType)) {
+            MediaProcess mediaProcess = new MediaProcess();
+            BeanUtils.copyProperties(mediaFiles, mediaProcess);
+            mediaProcess.setStatus("1"); // 未处理
+            int processInsert = mediaProcessMapper.insert(mediaProcess);
+            if (processInsert <= 0) {
+                XueChengPlusException.cast("保存avi视频到待处理表失败");
+            }
         }
         return mediaFiles;
     }
@@ -292,7 +308,8 @@ public class MediaFileServiceImpl implements MediaFileService {
      * @param objectName 桶内文件路径
      * @return
      */
-    private File downloadFileFromMinio(File file, String bucket, String objectName) {
+    @Override
+    public File downloadFileFromMinio(File file, String bucket, String objectName) {
         try (FileOutputStream fileOutputStream = new FileOutputStream(file);
              InputStream inputStream = minioClient.getObject(GetObjectArgs
                      .builder()
@@ -399,6 +416,7 @@ public class MediaFileServiceImpl implements MediaFileService {
      * @param extension 文件扩展名
      * @return
      */
+    @Override
     public String getFilePathByMd5(String fileMd5, String extension) {
         return fileMd5.substring(0, 1) + "/" + fileMd5.substring(1, 2) + "/" + fileMd5 + "/" + fileMd5 + extension;
     }

@@ -7,8 +7,13 @@ import com.xuecheng.media.model.dto.QueryMediaParamsDto;
 import com.xuecheng.media.model.dto.UploadFileParamsDto;
 import com.xuecheng.media.model.dto.UploadFileResultDto;
 import com.xuecheng.media.model.po.MediaFiles;
+import com.xuecheng.media.model.po.MediaProcess;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
+import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * @author Mr.M
@@ -94,4 +99,29 @@ public interface MediaFileService {
      * @return
      */
     MediaFiles getFileById(String mediaId);
+
+    /**
+     * 从minio下载文件
+     * @param file          下载后的文件
+     * @param bucket        minio中的桶
+     * @param objectName    minio中的对象名称
+     * @return
+     */
+    File downloadFileFromMinio(File file, String bucket, String objectName);
+
+    /**
+     * 将本地文件上传到MinIO
+     * @param filePath      本地文件路径
+     * @param bucket        上传到的桶
+     * @param objectName    上传到的objectName
+     */
+    void addMediaFilesToMinIO(String filePath, String bucket, String objectName);
+
+    /**
+     * 根据文件md5，生成在minio中的文件路径
+     * @param fileMd5       文件md5
+     * @param extension     文件后缀名
+     * @return
+     */
+    String getFilePathByMd5(String fileMd5, String extension);
 }
