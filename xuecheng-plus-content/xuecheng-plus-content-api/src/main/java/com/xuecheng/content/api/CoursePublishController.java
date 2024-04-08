@@ -31,4 +31,10 @@ public class CoursePublishController {
                 Long companyId = 22L;
                 coursePublishService.commitAudit(companyId, courseId);
         }
+
+        @PostMapping("/coursepublish/{courseId}")
+        public void coursePublish(@PathVariable Long courseId) {
+                Long companyId = 22L;
+                coursePublishService.publishCourse(companyId, courseId);
+        }
 }
