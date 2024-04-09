@@ -11,6 +11,7 @@ import com.xuecheng.content.service.CourseBaseInfoService;
 import com.xuecheng.exception.ValidationGroups;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +35,7 @@ public class CourseBaseInfoController {
 
     @ApiOperation("课程查询接口")
     @PostMapping("/course/list")
-    public PageResult<CourseBase> list(PageParams pageParams, @RequestBody(required=false) QueryCourseParamsDto queryCourseParamsDto) {
+    public PageResult<CourseBase> list(PageParams pageParams, @RequestBody(required = false) QueryCourseParamsDto queryCourseParamsDto) {
         PageResult<CourseBase> courseBasePageResult = courseBaseInfoService.queryCourseBaseList(pageParams, queryCourseParamsDto);
         return courseBasePageResult;
 
@@ -43,8 +44,8 @@ public class CourseBaseInfoController {
     @ApiOperation("根据课程id查询课程基础信息")
     @GetMapping("/course/{courseId}")
     public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId) {
-        //SecurityUtil.XcUser user = SecurityUtil.getUser();
-        //System.out.println("当前用户身份为：" + user);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("当前用户身份为：" + principal);
         return courseBaseInfoService.getCourseBaseInfo(courseId);
     }
 
@@ -67,6 +68,6 @@ public class CourseBaseInfoController {
     @DeleteMapping("/course/{courseId}")
     public void deleteCourse(@PathVariable Long courseId) {
         Long companyId = 22L;
-        courseBaseInfoService.delectCourse(companyId,courseId);
+        courseBaseInfoService.delectCourse(companyId, courseId);
     }
 }

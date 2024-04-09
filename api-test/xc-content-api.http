@@ -34,6 +34,12 @@ Content-Type: application/json
 #### 课程查询
 GET {{content_host}}/content/course/40
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsieHVlY2hlbmctcGx1cyJdLCJ1c2VyX25hbWUiOiJLeWxlIiwic2NvcGUiOlsiYWxsIl0sImV4cCI6MTcxMjY3NDIyMSwiYXV0aG9yaXRpZXMiOlsicDEiXSwianRpIjoiOWRkYTFhYTctMzU5ZC00Y2Q1LTg4NTMtNGVkOTM1ZjgxMWVkIiwiY2xpZW50X2lkIjoiWGNXZWJBcHAifQ.n4tVVLAVTKSaXpdu8j3j2juk26rU3In1dImJaV9lVtY
+
+#### 课程查询
+GET {{gateway_host}}/content/course/40
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsieHVlY2hlbmctcGx1cyJdLCJ1c2VyX25hbWUiOiJLeWxlIiwic2NvcGUiOlsiYWxsIl0sImV4cCI6MTcxMjY3NDIyMSwiYXV0aG9yaXRpZXMiOlsicDEiXSwianRpIjoiOWRkYTFhYTctMzU5ZC00Y2Q1LTg4NTMtNGVkOTM1ZjgxMWVkIiwiY2xpZW50X2lkIjoiWGNXZWJBcHAifQ.n4tVVLAVTKSaXpdu8j3j2juk26rU3In1dImJaV9lVtY
 
 #### 修改课程
 PUT {{content_host}}/content/course
