@@ -1,8 +1,11 @@
 ## 授权码模式
-POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=authorization_code&code=v52IFL&redirect_uri=http://www.51xuecheng.cn
+POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=authorization_code&code=KxIeeB&redirect_uri=http://www.51xuecheng.cn
 
 #### 密码模式
-POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=password&username=Kyle&password=123
+POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=password&username=t1&password=111111
 
 #### 校验JWT令牌
-POST {{auth_host}}/auth/oauth/check_token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsieHVlY2hlbmctcGx1cyJdLCJ1c2VyX25hbWUiOiJLeWxlIiwic2NvcGUiOlsiYWxsIl0sImV4cCI6MTcxMjY3MTEwNSwiYXV0aG9yaXRpZXMiOlsicDEiXSwianRpIjoiYjEyYmNlODktY2RlMi00Y2Y5LTk4MmYtOTdmZDE0YTU0ODEzIiwiY2xpZW50X2lkIjoiWGNXZWJBcHAifQ.HDZwjCLNFpPzuaV54BFQ-hLiRlEqVGoblW4IfqpMrys
+POST {{auth_host}}/auth/oauth/check_token?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOlsieHVlY2hlbmctcGx1cyJdLCJ1c2VyX25hbWUiOiJ7XCJjb21wYW55SWRcIjpcIjEyMzIxNDE0MjVcIixcImNyZWF0ZVRpbWVcIjpcIjIwMjItMDktMjhUMDg6MzI6MDNcIixcImlkXCI6XCI1MlwiLFwibmFtZVwiOlwiTeiAgeW4iFwiLFwic2V4XCI6XCIxXCIsXCJzdGF0dXNcIjpcIlwiLFwidXNlcm5hbWVcIjpcInQxXCIsXCJ1dHlwZVwiOlwiMTAxMDAyXCJ9Iiwic2NvcGUiOlsiYWxsIl0sImV4cCI6MTcxMjc0NDIyOSwiYXV0aG9yaXRpZXMiOlsidGVzdCJdLCJqdGkiOiI5YjkwNDc2ZS02NDQ0LTQxOWYtOWM5NC01NmNjNWQwYjQwNzciLCJjbGllbnRfaWQiOiJYY1dlYkFwcCJ9.9Kg01W-Rs9WRE5NsgnneserYVVgkuD-pXWgF4zIxfH0
+
+#### 密码模式
+POST {{auth_host}}/auth/oauth/token?client_id=XcWebApp&client_secret=XcWebApp&grant_type=password&username={"username":"t1","password":"111111","authType":"password"}

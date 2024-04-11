@@ -30,10 +30,15 @@ public class TokenConfig {
     private JwtAccessTokenConverter accessTokenConverter;
 
 
+    //@Bean
+    //public TokenStore tokenStore() {
+    //    //使用内存存储令牌（普通令牌）
+    //    return new InMemoryTokenStore();
+    //}
+
     @Bean
     public TokenStore tokenStore() {
-        //使用内存存储令牌（普通令牌）
-        return new InMemoryTokenStore();
+        return new JwtTokenStore(accessTokenConverter());
     }
 
     @Bean

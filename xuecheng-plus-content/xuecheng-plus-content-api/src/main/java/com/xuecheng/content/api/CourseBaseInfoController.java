@@ -8,6 +8,7 @@ import com.xuecheng.content.model.dto.EditCourseDto;
 import com.xuecheng.content.model.dto.QueryCourseParamsDto;
 import com.xuecheng.content.model.po.CourseBase;
 import com.xuecheng.content.service.CourseBaseInfoService;
+import com.xuecheng.content.utils.SecurityUtil;
 import com.xuecheng.exception.ValidationGroups;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -44,8 +45,10 @@ public class CourseBaseInfoController {
     @ApiOperation("根据课程id查询课程基础信息")
     @GetMapping("/course/{courseId}")
     public CourseBaseInfoDto getCourseBaseById(@PathVariable Long courseId) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println("当前用户身份为：" + principal);
+        //Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //System.out.println("当前用户身份为：" + principal);
+        SecurityUtil.XcUser user = SecurityUtil.getUser();
+        System.out.println(user.getName());
         return courseBaseInfoService.getCourseBaseInfo(courseId);
     }
 

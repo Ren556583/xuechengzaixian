@@ -1,0 +1,6 @@
+#### 获取验证码图片
+POST {{checkcode_host}}/checkcode/pic
+
+###### 校验验证码
+POST {{checkcode_host}}/checkcode/verify?key=checkcode:8bb21e8c3237456ea2b69904799d47a4&code=AA8V
+
