@@ -29,7 +29,6 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public RestErrorResponse exception(Exception exception) {
         log.error("系统异常：{}", exception.getMessage());
-        exception.printStackTrace();
         if ("不允许访问".equals(exception.getMessage()))
             return new RestErrorResponse("您没有权限操作此功能");
         return new RestErrorResponse(exception.getMessage());
