@@ -46,6 +46,9 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     XcOrdersGoodsMapper xcOrdersGoodsMapper;
 
+    @Autowired
+    OrderServiceImpl currentProxy;
+
     @Value("${pay.qrcodeurl}")
     String qrcodeurl;
 
@@ -133,7 +136,7 @@ public class OrderServiceImpl implements OrderService {
         PayStatusDto payStatusDto = queryPayResultFromAlipay(payNo);
 
         // 2. 拿到支付结果，更新支付记录表和订单表的状态为 已支付
-        saveAlipayStatus(payStatusDto);
+        currentProxy.saveAlipayStatus(payStatusDto);
 
         return null;
     }
@@ -188,6 +191,8 @@ public class OrderServiceImpl implements OrderService {
      *
      * @param payStatusDto 支付结果信息
      */
+    @Transactional
+    @Override
     public void saveAlipayStatus(PayStatusDto payStatusDto) {
         // 1. 获取支付流水号
         String payNo = payStatusDto.getOut_trade_no();

@@ -30,4 +30,10 @@ public interface OrderService {
      */
     PayRecordDto queryPayResult(String payNo);
 
+    /**
+     * 保存支付状态
+     * @param payStatusDto
+     */
+    void saveAlipayStatus(PayStatusDto payStatusDto);
+
 }
