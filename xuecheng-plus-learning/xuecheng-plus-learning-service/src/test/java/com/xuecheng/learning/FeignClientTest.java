@@ -25,7 +25,7 @@ public class FeignClientTest {
 
     @Test
     public void testContentServiceClient() {
-        CoursePublish coursepublish = contentServiceClient.getCoursepublish(2L);
+        CoursePublish coursepublish = contentServiceClient.getCoursePublish(2L);
         Assertions.assertNotNull(coursepublish);
     }
 }
