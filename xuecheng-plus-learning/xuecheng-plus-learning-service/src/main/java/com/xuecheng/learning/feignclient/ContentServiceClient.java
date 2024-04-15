@@ -22,5 +22,5 @@ public interface ContentServiceClient {
     public CoursePublish getCoursePublish(@PathVariable("courseId") Long courseId);
 
     @PostMapping("/content/teachplan/{teachplanId}")
-    Teachplan getTeachplan(@PathVariable Long teachplanId);
+    Teachplan getTeachplan(@PathVariable("teachplanId") Long teachplanId);
 }

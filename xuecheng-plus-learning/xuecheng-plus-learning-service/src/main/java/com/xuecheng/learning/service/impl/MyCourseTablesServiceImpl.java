@@ -1,6 +1,7 @@
 package com.xuecheng.learning.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.xuecheng.base.model.PageResult;
 import com.xuecheng.content.model.po.CoursePublish;
 import com.xuecheng.exception.XueChengPlusException;
@@ -202,7 +203,24 @@ public class MyCourseTablesServiceImpl implements MyCourseTablesService {
 
     @Override
     public PageResult<XcCourseTables> myCourseTables(MyCourseTableParams params) {
-        return null;
+        // 1. 获取页码
+        int pageNo = params.getPage();
+        // 2. 设置每页记录数，固定为4
+        long pageSize = 4;
+        // 3. 分页条件
+        Page<XcCourseTables> page = new Page<>(pageNo, pageSize);
+        // 4. 根据用户id查询课程
+        String userId = params.getUserId();
+        LambdaQueryWrapper<XcCourseTables> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(XcCourseTables::getUserId, userId);
+        // 5. 分页查询
+        Page<XcCourseTables> pageResult = courseTablesMapper.selectPage(page, queryWrapper);
+        // 6. 获取记录总数
+        long total = pageResult.getTotal();
+        // 7. 获取记录
+        List<XcCourseTables> records = pageResult.getRecords();
+        // 8. 封装返回
+        return new PageResult<>(records, total, pageNo, pageSize);
     }
 
     /**

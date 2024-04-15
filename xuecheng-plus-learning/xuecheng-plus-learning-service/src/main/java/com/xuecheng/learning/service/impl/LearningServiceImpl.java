@@ -9,8 +9,12 @@ import com.xuecheng.learning.feignclient.MediaServiceClient;
 import com.xuecheng.learning.model.dto.XcCourseTablesDto;
 import com.xuecheng.learning.service.LearningService;
 import com.xuecheng.learning.service.MyCourseTablesService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Slf4j
+@Service
 public class LearningServiceImpl implements LearningService {
 
     @Autowired
