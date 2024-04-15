@@ -55,4 +55,10 @@ public class TeachplanController {
     public void unassociationMedia(@PathVariable Long teachPlanId, @PathVariable String mediaId) {
         teachplanService.unassociationMedia(teachPlanId, mediaId);
     }
+
+    @ApiOperation("课程计划查询")
+    @PostMapping("/teachplan/{teachplanId}")
+    public Teachplan getTeachplan(@PathVariable Long teachplanId) {
+        return teachplanService.getTeachplan(teachplanId);
+    }
 }

@@ -1,9 +1,11 @@
 package com.xuecheng.learning.feignclient;
 
 import com.xuecheng.content.model.po.CoursePublish;
+import com.xuecheng.content.model.po.Teachplan;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
@@ -19,4 +21,6 @@ public interface ContentServiceClient {
     @GetMapping("/content/r/coursepublish/{courseId}")
     public CoursePublish getCoursePublish(@PathVariable("courseId") Long courseId);
 
+    @PostMapping("/content/teachplan/{teachplanId}")
+    Teachplan getTeachplan(@PathVariable Long teachplanId);
 }
