@@ -96,3 +96,7 @@ Content-Type: application/octet-stream
 #### 查询课程发布信息
 GET {{content_host}}/content/r/coursepublish/2
 Content-Type: application/json
+
+#### 网关访问课程查询
+GET {{gateway_host}}/content/course/whole/120
+Content-Type: application/json
