@@ -38,6 +38,8 @@ import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -163,7 +165,8 @@ public class CoursePublishServiceImpl implements CoursePublishService {
 
     /**
      * 保存课程发布信息
-     * @param courseId  课程id
+     *
+     * @param courseId 课程id
      */
     private void saveCoursePublish(Long courseId) {
         CoursePublishPre coursePublishPre = coursePublishPreMapper.selectById(courseId);
@@ -190,11 +193,12 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     /**
      * TODO 待会儿我们再来实现
      * 保存消息表
-     * @param courseId  课程id
+     *
+     * @param courseId 课程id
      */
     private void saveCoursePublishMessage(Long courseId) {
         MqMessage mqMessage = mqMessageService.addMessage("course_publish", String.valueOf(courseId), null, null);
-        if(mqMessage == null){
+        if (mqMessage == null) {
             XueChengPlusException.cast("添加消息记录失败");
         }
     }
@@ -233,7 +237,7 @@ public class CoursePublishServiceImpl implements CoursePublishService {
     public void uploadCourseHtml(Long courseId, File file) {
         MultipartFile multipartFile = MultipartSupportConfig.getMultipartFile(file);
         String course = mediaServiceClient.upload(multipartFile, "course", courseId + ".html");
-        if(course == null){
+        if (course == null) {
             XueChengPlusException.cast("远程调用媒资服务上传文件失败");
         }
     }
@@ -265,15 +269,36 @@ public class CoursePublishServiceImpl implements CoursePublishService {
         // 2. 如果缓存里有，直接返回
         if (StringUtils.isNotEmpty(courseCacheJson)) {
             log.debug("从缓存中查询");
+            if ("null".equals(courseCacheJson)) {
+                return null;
+            }
             CoursePublish coursePublish = JSON.parseObject(courseCacheJson, CoursePublish.class);
             return coursePublish;
         } else {
+            //同步锁解决缓存击穿
+            //synchronized (this){
+            //    //再次查询缓存
+            //    courseCacheJson = redisTemplate.opsForValue().get("course:" + courseId);
+            //    log.debug("从缓存中查询");
+            //    if ("null".equals(courseCacheJson)) {
+            //        return null;
+            //    }
+            //    CoursePublish coursePublish = JSON.parseObject(courseCacheJson, CoursePublish.class);
+            //    return coursePublish;
+            //}
+            //    。。。。。
             log.debug("缓存中没有，查询数据库");
             // 3. 如果缓存里没有，查询数据库
             CoursePublish coursePublish = getCoursePublish(courseId);
+            if (coursePublish == null) {
+                redisTemplate.opsForValue().set("course:" + courseId, "null", 30, TimeUnit.SECONDS);
+                return null;
+            }
             String jsonString = JSON.toJSONString(coursePublish);
             // 3.1 将查询结果缓存
             redisTemplate.opsForValue().set("course:" + courseId, jsonString);
+            //解决缓存雪崩
+            //redisTemplate.opsForValue().set("course:" + courseId, jsonString, 30 + new Random().nextInt(100), TimeUnit.SECONDS);
             // 3.1 返回查询结果
             return coursePublish;
         }
